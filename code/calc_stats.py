@@ -208,16 +208,16 @@ def make_stats(a1, b1, gd1, n, tag):
         bl_train = np.append(bl_train, bt_train)
         
     c_out = mcnemar(confusion_matrix(al_out, bl_out, labels=(0,1)))
-    result_mc_out = {'tag': tag, 'type': 'McNemar', 'pvalue': c_out.pvalue, 'statistic': c_out.statistic }
+    result_mc_out = {'tag': tag, 'set': 'out-of-sample', 'sample-count': len(al_out),'type': 'McNemar', 'pvalue': c_out.pvalue, 'statistic': c_out.statistic }
 
     c_train = mcnemar(confusion_matrix(al_train, bl_train, labels=(0,1)))
-    result_mc_train = {'tag': tag, 'type': 'McNemar', 'pvalue': c_train.pvalue, 'statistic': c_train.statistic }
+    result_mc_train = {'tag': tag, 'set': 'train', 'sample-count': len(al_train), 'type': 'McNemar', 'pvalue': c_train.pvalue, 'statistic': c_train.statistic }
 
-    stats_out, pvalue_out = ttest_ind(al_out, bl_out)
-    result_st_out = {'tag': tag, 'type': 'Ttest', 'pvalue': pvalue_out, 'statistic': stats_out }
+    stats_out, pvalue_out = ttest_ind(al_out, bl_out, alternative='greater')
+    result_st_out = {'tag': tag, 'set': 'out-of-sample', 'sample-count': len(al_out), 'type': 'Ttest', 'pvalue': pvalue_out, 'statistic': stats_out }
 
-    stats_train, pvalue_train = ttest_ind(al_train, bl_train)
-    result_st_train = {'tag': tag, 'type': 'Ttest', 'pvalue': pvalue_train, 'statistic': stats_train }
+    stats_train, pvalue_train = ttest_ind(al_train, bl_train, alternative='greater')
+    result_st_train = {'tag': tag, 'set': 'train', 'sample-count': len(al_train), 'type': 'Ttest', 'pvalue': pvalue_train, 'statistic': stats_train }
     
     return result_st_train, result_st_out, result_mc_train, result_mc_out
 
@@ -346,7 +346,7 @@ split = 11 #Where to split train/out of sample test data
 rnd_st_train, rnd_st_out, rnd_mc_train, rnd_mc_out = make_stats(our_prediction, rnd_prediction, ground_truth, split, "random_guess")
 moda_st_train, moda_st_out, moda_mc_train, moda_mc_out = make_stats(our_prediction, moda_prediction, ground_truth, split, "moda")
 
-stats_data = pd.DataFrame(columns=["tag" , "type", "pvalue", "statistic"])
+stats_data = pd.DataFrame(columns=["tag" , "set", "sample-count", "type", "pvalue", "statistic"])
 stats_data = stats_data.append(rnd_st_train, ignore_index=True)
 stats_data = stats_data.append(rnd_st_out, ignore_index=True)
 stats_data = stats_data.append(rnd_mc_train, ignore_index=True)
