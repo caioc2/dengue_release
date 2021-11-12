@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import confusion_matrix
 from statsmodels.stats.contingency_tables import mcnemar
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_rel
 warnings.filterwarnings("ignore")
 
 ######################################
@@ -213,10 +213,10 @@ def make_stats(a1, b1, gd1, n, tag):
     c_train = mcnemar(confusion_matrix(al_train, bl_train, labels=(0,1)))
     result_mc_train = {'tag': tag, 'set': 'train', 'sample-count': len(al_train), 'type': 'McNemar', 'pvalue': c_train.pvalue, 'statistic': c_train.statistic }
 
-    stats_out, pvalue_out = ttest_ind(al_out, bl_out, alternative='greater')
+    stats_out, pvalue_out = ttest_rel(al_out, bl_out, alternative='greater')
     result_st_out = {'tag': tag, 'set': 'out-of-sample', 'sample-count': len(al_out), 'type': 'Ttest', 'pvalue': pvalue_out, 'statistic': stats_out }
 
-    stats_train, pvalue_train = ttest_ind(al_train, bl_train, alternative='greater')
+    stats_train, pvalue_train = ttest_rel(al_train, bl_train, alternative='greater')
     result_st_train = {'tag': tag, 'set': 'train', 'sample-count': len(al_train), 'type': 'Ttest', 'pvalue': pvalue_train, 'statistic': stats_train }
     
     return result_st_train, result_st_out, result_mc_train, result_mc_out
